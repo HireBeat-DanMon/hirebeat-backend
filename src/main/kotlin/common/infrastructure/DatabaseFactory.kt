@@ -1,15 +1,23 @@
 package com.ktor.api.hirebeat.common.infrastructure
 
+import com.ktor.api.hirebeat.modules.catalogs.domain.model.Instrument
 import com.ktor.api.hirebeat.modules.catalogs.infrastructure.persistence.GenreTable
 import com.ktor.api.hirebeat.modules.catalogs.infrastructure.persistence.InstrumentTable
 import com.ktor.api.hirebeat.modules.catalogs.infrastructure.persistence.RoleTable
+import com.ktor.api.hirebeat.modules.profile.infrastructure.persistence.ProfileGenresTable
+import com.ktor.api.hirebeat.modules.profile.infrastructure.persistence.ProfileInstrumentsTable
+import com.ktor.api.hirebeat.modules.profile.infrastructure.persistence.ProfileLinksTable
+import com.ktor.api.hirebeat.modules.profile.infrastructure.persistence.ProfileTable
 import com.ktor.api.hirebeat.modules.users.infrastructure.persistence.UserTable
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.github.cdimascio.dotenv.dotenv
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.UUID
 
 object DatabaseFactory {
     private val dotenv = dotenv()
@@ -38,6 +46,7 @@ object DatabaseFactory {
             SchemaUtils.create(
                 UserTable,
                 RoleTable, InstrumentTable, GenreTable,
+                ProfileTable, ProfileInstrumentsTable, ProfileGenresTable, ProfileLinksTable
             )
         }
 
