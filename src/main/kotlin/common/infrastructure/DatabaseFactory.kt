@@ -1,9 +1,11 @@
 package com.ktor.api.hirebeat.common.infrastructure
 
+import com.ktor.api.hirebeat.modules.availability.infrastructure.persistence.BlockedSlotTable
 import com.ktor.api.hirebeat.modules.catalogs.domain.model.Instrument
 import com.ktor.api.hirebeat.modules.catalogs.infrastructure.persistence.GenreTable
 import com.ktor.api.hirebeat.modules.catalogs.infrastructure.persistence.InstrumentTable
 import com.ktor.api.hirebeat.modules.catalogs.infrastructure.persistence.RoleTable
+import com.ktor.api.hirebeat.modules.gig_requests.infrastructure.persistence.GigRequestTable
 import com.ktor.api.hirebeat.modules.profile.infrastructure.persistence.ProfileGenresTable
 import com.ktor.api.hirebeat.modules.profile.infrastructure.persistence.ProfileInstrumentsTable
 import com.ktor.api.hirebeat.modules.profile.infrastructure.persistence.ProfileLinksTable
@@ -48,7 +50,9 @@ object DatabaseFactory {
                 UserTable,
                 RoleTable, InstrumentTable, GenreTable,
                 ProfileTable, ProfileInstrumentsTable, ProfileGenresTable, ProfileLinksTable,
-                ReviewTable
+                ReviewTable,
+                BlockedSlotTable,
+                GigRequestTable
             )
         }
 

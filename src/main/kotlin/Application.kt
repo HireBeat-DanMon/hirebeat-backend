@@ -5,8 +5,12 @@ import com.ktor.api.hirebeat.common.infrastructure.security.configureSecurity
 import com.ktor.api.hirebeat.modules.auth.infrastructure.authModule
 import com.ktor.api.hirebeat.modules.auth.infrastructure.rest.authRouting
 import com.ktor.api.hirebeat.modules.auth.infrastructure.security.JwtTokenService
+import com.ktor.api.hirebeat.modules.availability.infrastructure.availabilityModule
+import com.ktor.api.hirebeat.modules.availability.infrastructure.rest.availabilityRouting
 import com.ktor.api.hirebeat.modules.catalogs.infrastructure.catalogModule
 import com.ktor.api.hirebeat.modules.catalogs.infrastructure.rest.catalogRouting
+import com.ktor.api.hirebeat.modules.gig_requests.infrastructure.gigRequestModule
+import com.ktor.api.hirebeat.modules.gig_requests.infrastructure.rest.gigRequestRouting
 import com.ktor.api.hirebeat.modules.profile.infrastructure.profileModule
 import com.ktor.api.hirebeat.modules.profile.infrastructure.rest.profileRouting
 import com.ktor.api.hirebeat.modules.reviews.infrastructure.rest.reviewRouting
@@ -44,7 +48,9 @@ fun Application.module() {
             authModule,
             catalogModule,
             profileModule,
-            reviewModule
+            reviewModule,
+            availabilityModule,
+            gigRequestModule
         )
     }
 
@@ -73,6 +79,8 @@ fun Application.module() {
         catalogRouting()
         profileRouting()
         reviewRouting()
+        availabilityRouting()
+        gigRequestRouting()
     }
 
     println("HireBeat API running port 8080")
