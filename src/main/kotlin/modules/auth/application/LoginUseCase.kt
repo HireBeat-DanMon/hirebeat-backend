@@ -11,10 +11,10 @@ class LoginUseCase(
 ) {
     suspend fun execute(email: String, plainPassword: String): Pair<String, String?> {
         val user = userRepository.findByEmail(email)
-            ?: throw SecurityException("Invalid email or password")
+            ?: throw SecurityException("Contraseña o email invalio")
 
         if (!hasher.check(plainPassword, user.password)) {
-            throw SecurityException("Invalid email or password")
+            throw SecurityException("COntraseña o email invalido")
         }
 
         val token = tokenService.generateToken(user)

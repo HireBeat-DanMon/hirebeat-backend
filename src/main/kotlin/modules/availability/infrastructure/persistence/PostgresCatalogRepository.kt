@@ -4,8 +4,6 @@ import com.ktor.api.hirebeat.modules.availability.domain.model.BlockedSlot
 import com.ktor.api.hirebeat.modules.availability.domain.repository.BlockedSlotRepository
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.less
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.greater
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
 import java.util.UUID

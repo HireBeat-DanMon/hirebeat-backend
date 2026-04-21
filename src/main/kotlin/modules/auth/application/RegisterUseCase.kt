@@ -15,17 +15,17 @@ class RegisterUseCase(
 ) {
     suspend fun execute(user: User): User {
         val existing = userRepository.findByEmail(user.email)
-        if (existing != null) throw IllegalStateException("duplicate email")
+        if (existing != null) throw IllegalStateException("Email Duplicado")
 
         val roleId = user.role?.id ?:
-        throw IllegalArgumentException("Role ID is required")
+        throw IllegalArgumentException("El rolId es requerido")
 
         val roledb = catalogRepository.findRoleById(roleId)
-            ?: throw IllegalStateException("the role doesn't exist")
+            ?: throw IllegalStateException("El rol no existe")
 
         val allowedRoles = listOf("Musician", "Recruiter")
         if (!allowedRoles.contains(roledb.name))
-            throw IllegalStateException("the role doesn't exist")
+            throw IllegalStateException("El rol no existe")
 
 
         val userSave = user.copy(
@@ -34,11 +34,11 @@ class RegisterUseCase(
         )
 
         val saveUser = userRepository.save(userSave)
-        val userId = saveUser.id ?: throw IllegalStateException("User ID was not generated")
+        val userId = saveUser.id ?: throw IllegalStateException("UserId no fue generado")
 
         if (roledb.name.equals("Musician", ignoreCase = true)) {
             if (!profileRepository.create(userId))
-                throw RuntimeException("Failed to create profile for musician")
+                throw RuntimeException("Fallo al crear el perfil para el musico")
         }
 
         return saveUser

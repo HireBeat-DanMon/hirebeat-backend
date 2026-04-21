@@ -11,14 +11,14 @@ data class LoginRequest(
         val errors = mutableMapOf<String, String>()
 
         if (email.isBlank() || !email.contains("@")) {
-            errors["email"] = "Valid email is required"
+            errors["email"] = "El email es requerido, o falla el formato"
         }
 
         val passwordRegex = Regex("""^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$""")
         if (password.isBlank()) {
-            errors["password"] = "Password is required"
+            errors["password"] = "La contraseña es requerida"
         } else if (!password.matches(passwordRegex)) {
-            errors["password"] = "Invalid password format"
+            errors["password"] = "La contraseña tiene un formato invalido"
         }
         return errors
     }

@@ -1,6 +1,5 @@
 package com.ktor.api.hirebeat.modules.gig_requests.domain.model
 
-import com.ktor.api.hirebeat.modules.profile.domain.model.Profile
 import com.ktor.api.hirebeat.modules.users.domain.model.User
 import java.time.LocalDateTime
 import java.util.UUID

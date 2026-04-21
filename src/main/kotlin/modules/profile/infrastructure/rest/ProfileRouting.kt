@@ -24,7 +24,6 @@ fun Route.profileRouting() {
 
     route("/profile") {
 
-        // Todo lo que requiera Token debe ir dentro de este bloque
         authenticate("auth-jwt") {
             put {
                 try {
@@ -43,13 +42,13 @@ fun Route.profileRouting() {
                     val profile = updateUseCase.execute(userId, request.toDomain(userId = userId))
                     call.respond(HttpStatusCode.OK, profile.toResponse())
                 } catch (e: NotFoundException) {
-                    call.respond(HttpStatusCode.NotFound, e.message ?: "Profile not found")
+                    call.respond(HttpStatusCode.NotFound, mapOf("error" to (e.message ?: "Perfil no encontrado")))
                 } catch (e: IllegalArgumentException) {
-                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Invalid Data")
+                    call.respond(HttpStatusCode.BadRequest, mapOf("error" to (e.message ?: "Datos invalidos")))
                 } catch (e: IllegalStateException) {
-                    call.respond(HttpStatusCode.Conflict, e.message ?: "Server Error")
+                    call.respond(HttpStatusCode.Conflict, mapOf("error" to (e.message ?: "Server Error")))
                 } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error interno del servidor")
+                    call.respond(HttpStatusCode.InternalServerError, mapOf("error" to (e.message ?: "Error interno del servidor")))
                 }
             }
 
@@ -64,13 +63,12 @@ fun Route.profileRouting() {
                     val profile = getMyProfile.execute(userId)
                     call.respond(HttpStatusCode.OK, profile.toResponse())
                 } catch (e: NotFoundException) {
-                    call.respond(HttpStatusCode.NotFound, e.message ?: "Profile not found")
+                    call.respond(HttpStatusCode.NotFound, mapOf("error" to (e.message ?: "Perfil no enontrado")))
                 } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error interno del servidor")
+                    call.respond(HttpStatusCode.InternalServerError, mapOf("error" to (e.message ?: "Error interno del servidor")))
                 }
             }
 
-            // Moviendo POST /image AQUÍ ADENTRO para que esté protegido por el token
             post("/image") {
                 try {
                     val principal = call.principal<JWTPrincipal>()
@@ -97,24 +95,23 @@ fun Route.profileRouting() {
                         val imageUrl = uploadUseCase.execute(userId, fileBytes!!, originalFileName)
                         call.respond(HttpStatusCode.OK, mapOf("url" to imageUrl))
                     } else {
-                        call.respond(HttpStatusCode.BadRequest, "No se adjuntó ninguna imagen")
+                        call.respond(HttpStatusCode.BadRequest, mapOf("error" to "No se adjuntó ninguna imagen"))
                     }
                 } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error subiendo la imagen")
+                    call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "e.message ?: \"Error subiendo la imagen\""))
                 }
             }
-        } // Fin del bloque authenticate
+        }
 
-        // Estas rutas son públicas (no requieren token)
         get("/{id}") {
             try {
-                val id = UUID.fromString(call.parameters["id"]) ?: throw IllegalArgumentException("Invalid UUID format")
+                val id = UUID.fromString(call.parameters["id"]) ?: throw IllegalArgumentException("Formato invalido UUID")
                 val profile = getByUserIdUseCase.execute(id)
                 call.respond(HttpStatusCode.OK, profile.toResponse())
             } catch (e: NotFoundException) {
-                call.respond(HttpStatusCode.NotFound, e.message ?: "Profile not found")
+                call.respond(HttpStatusCode.NotFound, mapOf("error" to (e.message ?: "Perfil no encontrado")))
             } catch (e: Exception) {
-                call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error interno del servidor")
+                call.respond(HttpStatusCode.InternalServerError, mapOf("error" to (e.message ?: "Error interno del servidor")))
             }
         }
 

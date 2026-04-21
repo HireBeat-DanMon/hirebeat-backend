@@ -33,7 +33,6 @@ data class ProfileRequest(
             errors["descripcion"] = "La descripción no puede exceder los 500 caracteres"
         }
 
-        // Validación de Instrumentos
         if (instruments.isEmpty()) {
             errors["instruments"] = "Debes agregar al menos un instrumento"
         } else {
@@ -47,7 +46,6 @@ data class ProfileRequest(
             if (errorInstrument.isNotEmpty()) errors["instruments"] = errorInstrument
         }
 
-        // Validación de Links
         if (links.isEmpty()) {
             errors["links"] = "Debes agregar al menos una red social"
         } else {
