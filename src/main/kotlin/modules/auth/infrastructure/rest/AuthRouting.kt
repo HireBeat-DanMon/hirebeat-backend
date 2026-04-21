@@ -26,11 +26,17 @@ fun Route.authRouting() {
                     return@post call.respond(HttpStatusCode.BadRequest, errors)
                 }
 
-                val token = loginUseCase.execute(request.email, request.password)
-                call.respond(HttpStatusCode.OK, mapOf("token" to token))
-            }catch (e : SecurityException){
+                // Desestructuramos el resultado del UseCase para obtener ambos valores
+                val (token, roleId) = loginUseCase.execute(request.email, request.password)
+
+                // Enviamos ambos en el JSON de respuesta
+                call.respond(HttpStatusCode.OK, mapOf(
+                    "token" to token,
+                    "roleId" to (roleId ?: "")
+                ))
+            } catch (e : SecurityException){
                 call.respond(HttpStatusCode.Unauthorized, e.message ?: "Unauthorized")
-            }catch (e: IllegalArgumentException) {
+            } catch (e: IllegalArgumentException) {
                 call.respond(HttpStatusCode.BadRequest, e.message ?: "Invalid Data")
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.InternalServerError, "Server Problem")
@@ -49,7 +55,7 @@ fun Route.authRouting() {
                 call.respond(HttpStatusCode.Created, createdUser.toResponse())
             } catch (e: IllegalStateException) {
                 call.respond(HttpStatusCode.Conflict, e.message ?: "Conflict occurred")
-            }catch (e: IllegalStateException) {
+            } catch (e: IllegalArgumentException) {
                 call.respond(HttpStatusCode.BadRequest, e.message ?: "Invalid Data")
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.InternalServerError, e.message?:"Server Problem")

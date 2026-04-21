@@ -9,6 +9,8 @@ import com.ktor.api.hirebeat.modules.catalogs.infrastructure.catalogModule
 import com.ktor.api.hirebeat.modules.catalogs.infrastructure.rest.catalogRouting
 import com.ktor.api.hirebeat.modules.profile.infrastructure.profileModule
 import com.ktor.api.hirebeat.modules.profile.infrastructure.rest.profileRouting
+import com.ktor.api.hirebeat.modules.reviews.infrastructure.rest.reviewRouting
+import com.ktor.api.hirebeat.modules.reviews.infrastructure.reviewModule
 import com.ktor.api.hirebeat.modules.users.infrastructure.userModule
 import com.ktor.api.hirebeat.modules.users.infrastructure.rest.userRouting
 import io.ktor.http.HttpHeaders
@@ -41,7 +43,8 @@ fun Application.module() {
             userModule,
             authModule,
             catalogModule,
-            profileModule
+            profileModule,
+            reviewModule
         )
     }
 
@@ -69,6 +72,7 @@ fun Application.module() {
         authRouting()
         catalogRouting()
         profileRouting()
+        reviewRouting()
     }
 
     println("HireBeat API running port 8080")

@@ -4,11 +4,12 @@ import com.ktor.api.hirebeat.modules.profile.application.*
 import com.ktor.api.hirebeat.modules.profile.infrastructure.rest.dto.*
 import com.ktor.api.hirebeat.modules.users.infrastructure.rest.dto.toResponse
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.*
 import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
 import io.ktor.server.plugins.NotFoundException
-import io.ktor.server.request.receive
+import io.ktor.server.request.*
 import io.ktor.server.routing.*
 import io.ktor.server.response.*
 import io.ktor.server.response.respond
@@ -22,6 +23,8 @@ fun Route.profileRouting() {
     val getAllProfileUseCase by inject <GetAllProfileUseCase>()
 
     route("/profile") {
+
+        // Todo lo que requiera Token debe ir dentro de este bloque
         authenticate("auth-jwt") {
             put {
                 try {
@@ -49,6 +52,7 @@ fun Route.profileRouting() {
                     call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error interno del servidor")
                 }
             }
+
             get("/me") {
                 try {
                     val principal = call.principal<JWTPrincipal>()
@@ -65,7 +69,43 @@ fun Route.profileRouting() {
                     call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error interno del servidor")
                 }
             }
-        }
+
+            // Moviendo POST /image AQUÍ ADENTRO para que esté protegido por el token
+            post("/image") {
+                try {
+                    val principal = call.principal<JWTPrincipal>()
+                    val claimId = principal?.payload?.getClaim("id")?.asString()
+                    val userId = claimId?.let { UUID.fromString(it) } ?: throw IllegalArgumentException("Token inválido")
+
+                    val multipartData = call.receiveMultipart()
+                    var fileBytes: ByteArray? = null
+                    var originalFileName = "image.jpg"
+
+                    multipartData.forEachPart { part ->
+                        when (part) {
+                            is PartData.FileItem -> {
+                                originalFileName = part.originalFileName as String
+                                fileBytes = part.streamProvider().readBytes()
+                            }
+                            else -> {}
+                        }
+                        part.dispose()
+                    }
+
+                    if (fileBytes != null) {
+                        val uploadUseCase by inject<UploadProfileImageUseCase>()
+                        val imageUrl = uploadUseCase.execute(userId, fileBytes!!, originalFileName)
+                        call.respond(HttpStatusCode.OK, mapOf("url" to imageUrl))
+                    } else {
+                        call.respond(HttpStatusCode.BadRequest, "No se adjuntó ninguna imagen")
+                    }
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error subiendo la imagen")
+                }
+            }
+        } // Fin del bloque authenticate
+
+        // Estas rutas son públicas (no requieren token)
         get("/{id}") {
             try {
                 val id = UUID.fromString(call.parameters["id"]) ?: throw IllegalArgumentException("Invalid UUID format")

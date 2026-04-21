@@ -8,6 +8,7 @@ import com.ktor.api.hirebeat.modules.profile.infrastructure.persistence.ProfileG
 import com.ktor.api.hirebeat.modules.profile.infrastructure.persistence.ProfileInstrumentsTable
 import com.ktor.api.hirebeat.modules.profile.infrastructure.persistence.ProfileLinksTable
 import com.ktor.api.hirebeat.modules.profile.infrastructure.persistence.ProfileTable
+import com.ktor.api.hirebeat.modules.reviews.infrastructure.persistence.ReviewTable
 import com.ktor.api.hirebeat.modules.users.infrastructure.persistence.UserTable
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -46,7 +47,8 @@ object DatabaseFactory {
             SchemaUtils.create(
                 UserTable,
                 RoleTable, InstrumentTable, GenreTable,
-                ProfileTable, ProfileInstrumentsTable, ProfileGenresTable, ProfileLinksTable
+                ProfileTable, ProfileInstrumentsTable, ProfileGenresTable, ProfileLinksTable,
+                ReviewTable
             )
         }
 

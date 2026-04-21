@@ -35,4 +35,5 @@ dependencies {
     implementation(libs.postgresql)
     implementation(libs.hikaricp)
     implementation(libs.ktor.serialization.kotlinx.json)
+    implementation("com.cloudinary:cloudinary-http44:1.36.0")
 }
