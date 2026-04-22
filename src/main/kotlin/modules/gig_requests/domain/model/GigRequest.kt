@@ -15,6 +15,8 @@ data class GigRequest(
     val musicianProfileId: UUID,
     val startTime: LocalDateTime,
     val endTime: LocalDateTime,
+    val location: String,
+    val paymentOffered: Double,
     val messageDetails: String?,
     val status: RequestStatus = RequestStatus.PENDIENTE,
     val createdAt: LocalDateTime? = null,

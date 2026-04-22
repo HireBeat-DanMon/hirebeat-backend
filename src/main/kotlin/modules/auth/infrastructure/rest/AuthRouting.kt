@@ -34,6 +34,8 @@ fun Route.authRouting() {
                     "token" to token,
                     "roleId" to (roleId ?: "")
                 ))
+
+                println(token)
             } catch (e : SecurityException){
                 call.respond(HttpStatusCode.Unauthorized, e.message ?: "Unauthorized")
             } catch (e: IllegalArgumentException) {

@@ -1,3 +1,4 @@
+// kotlin/modules/gig_requests/infrastructure/rest/GigRequestRouting.kt
 package com.ktor.api.hirebeat.modules.gig_requests.infrastructure.rest
 
 import com.ktor.api.hirebeat.modules.gig_requests.application.*
@@ -29,12 +30,24 @@ fun Route.gigRequestRouting() {
                     val recruiterId = UUID.fromString(principal?.payload?.getClaim("id")?.asString())
 
                     val dto = call.receive<CreateGigRequestDto>()
-                    val request = createUseCase.execute(dto.toDomain(recruiterId))
 
-                    call.respond(HttpStatusCode.Created, request.id.toString())
+                    val errors = dto.getErrors()
+                    if (errors.isNotEmpty()) {
+                        return@post call.respond(HttpStatusCode.BadRequest, errors)
+                    }
+
+                    val request = createUseCase.execute(dto.toDomain(recruiterId))
+                    call.respond(
+                        HttpStatusCode.Created,
+                        CreateGigRequestResponseDto(id = request.id.toString(), message = "Solicitud enviada")
+                    )
+
                 } catch (e: IllegalStateException) {
                     call.respond(HttpStatusCode.Conflict, e.message ?: "Músico ocupado")
+                } catch (e: IllegalArgumentException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Datos inválidos")
                 } catch (e: Exception) {
+                    e.printStackTrace()
                     call.respond(HttpStatusCode.InternalServerError, "Error en el servidor")
                 }
             }
