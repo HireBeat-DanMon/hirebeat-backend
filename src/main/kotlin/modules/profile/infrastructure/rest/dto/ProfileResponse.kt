@@ -15,6 +15,7 @@ data class ProfileResponse(
     val city: String,
     val experience: Int,
     val descripcion: String,
+    val imageUrl: String?,
     val genres: List<GenreResponse>,
     val instruments: List<InstrumentResponse>,
     val links: List<LinkResponse>
@@ -48,6 +49,7 @@ fun Profile.toResponse() = ProfileResponse(
     city = city ?: "",
     experience = experience ?: 0,
     descripcion = descripcion ?: "",
+    imageUrl = imageUrl,
     genres = genres.map {
         GenreResponse(
             it.id,

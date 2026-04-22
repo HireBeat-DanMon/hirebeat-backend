@@ -9,6 +9,7 @@ object ProfileTable : Table("musician_profile"){
     val city = varchar("city", 100).nullable()
     val experience = integer("experience").nullable()
     val descripcion = text("descripcion").nullable()
+    val imageUrl = text("image_url").nullable()
 
     override val primaryKey = PrimaryKey(id)
 }

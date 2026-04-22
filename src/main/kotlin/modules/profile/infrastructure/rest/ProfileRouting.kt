@@ -21,6 +21,7 @@ fun Route.profileRouting() {
     val getByUserIdUseCase by inject<GetByIdProfileUseCase>()
     val getMyProfile by inject<GetMyProfile>()
     val getAllProfileUseCase by inject <GetAllProfileUseCase>()
+    val uploadUseCase by inject<UploadProfileImageUseCase>()
 
     route("/profile") {
 
@@ -55,6 +56,15 @@ fun Route.profileRouting() {
             get("/me") {
                 try {
                     val principal = call.principal<JWTPrincipal>()
+
+                    val role = principal?.payload?.getClaim("role")?.asString()
+
+                    if (role != "Musician") {
+                        return@get call.respond(
+                            HttpStatusCode.Forbidden,
+                            mapOf("error" to "Acceso denegado: Solo los músicos tienen perfil configurable.")
+                        )
+                    }
                     val claimId = principal?.payload?.getClaim("id")?.asString()
 
                     val userId = claimId?.let { UUID.fromString(it) }
@@ -91,15 +101,13 @@ fun Route.profileRouting() {
                     }
 
                     if (fileBytes != null) {
-                        val uploadUseCase by inject<UploadProfileImageUseCase>()
                         val imageUrl = uploadUseCase.execute(userId, fileBytes!!, originalFileName)
                         call.respond(HttpStatusCode.OK, mapOf("url" to imageUrl))
                     } else {
                         call.respond(HttpStatusCode.BadRequest, mapOf("error" to "No se adjuntó ninguna imagen"))
                     }
                 } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "e.message ?: \"Error subiendo la imagen\""))
-                }
+                    call.respond(HttpStatusCode.InternalServerError, mapOf("error" to (e.message ?: "Error desconocido")))                }
             }
         }
 
