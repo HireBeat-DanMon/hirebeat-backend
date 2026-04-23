@@ -1,4 +1,3 @@
-// kotlin/modules/gig_requests/infrastructure/rest/GigRequestRouting.kt
 package com.ktor.api.hirebeat.modules.gig_requests.infrastructure.rest
 
 import com.ktor.api.hirebeat.modules.gig_requests.application.*
@@ -17,7 +16,6 @@ import java.util.UUID
 fun Route.gigRequestRouting() {
     val createUseCase by inject<CreateGigRequestUseCase>()
     val updateStatusUseCase by inject<UpdateGigRequestStatusUseCase>()
-
     val getMusicianRequestsUseCase by inject<GetMusicianGigRequestsUseCase>()
     val getRecruiterRequestsUseCase by inject<GetRecruiterGigRequestsUseCase>()
 
@@ -36,7 +34,8 @@ fun Route.gigRequestRouting() {
                         return@post call.respond(HttpStatusCode.BadRequest, errors)
                     }
 
-                    val request = createUseCase.execute(dto.toDomain(recruiterId))
+                    val request = createUseCase.execute(dto.toDomain(), recruiterId)
+
                     call.respond(
                         HttpStatusCode.Created,
                         CreateGigRequestResponseDto(id = request.id.toString(), message = "Solicitud enviada")
