@@ -1,9 +1,7 @@
-// kotlin/modules/gig_requests/infrastructure/rest/dto/GigRequests.kt
 package com.ktor.api.hirebeat.modules.gig_requests.infrastructure.rest.dto
 
 import com.ktor.api.hirebeat.common.infrastructure.serialization.UUIDSerializer
 import com.ktor.api.hirebeat.modules.gig_requests.domain.model.GigRequest
-import com.ktor.api.hirebeat.modules.users.domain.model.User
 import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
 import java.util.UUID
@@ -35,8 +33,9 @@ data class CreateGigRequestDto(
 
         return errors
     }
-    fun toDomain(recruiterId: UUID) = GigRequest(
-        recruiter = User(id = recruiterId, email = "", password = ""),
+
+    fun toDomain() = GigRequest(
+        recruiter = null,
         musicianProfileId = UUID.fromString(musicianProfileId),
         startTime = LocalDateTime.parse(startTime),
         endTime = LocalDateTime.parse(endTime),
