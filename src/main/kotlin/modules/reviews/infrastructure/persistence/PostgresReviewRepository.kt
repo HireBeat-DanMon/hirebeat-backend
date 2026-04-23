@@ -50,4 +50,27 @@ class PostgresReviewRepository : ReviewRepository {
         }
         deletedRows > 0
     }
+
+
+    override suspend fun findAll(): List<Review> = transaction {
+        (ReviewTable innerJoin UserTable)
+            .selectAll()
+            .orderBy(ReviewTable.createdAt to SortOrder.DESC)
+            .map { row ->
+                Review(
+                    id = row[ReviewTable.id],
+                    reviewer = User(
+                        id = row[UserTable.id],
+                        email = row[UserTable.email],
+                        fullname = row[UserTable.fullname],
+                        password = ""
+                    ),
+                    musicianProfileId = row[ReviewTable.musicianProfileId],
+                    rating = row[ReviewTable.rating],
+                    comment = row[ReviewTable.comment],
+                    createdAt = row[ReviewTable.createdAt]
+                )
+            }
+    }
+
 }
