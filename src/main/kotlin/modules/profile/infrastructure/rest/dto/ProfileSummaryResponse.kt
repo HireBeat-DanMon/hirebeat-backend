@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ProfileSummaryResponse(
     val fullname: String,
+    val imageUrl: String?,
     val city: String,
     val experience: Int,
     val mainInstrument: String,
@@ -15,6 +16,7 @@ data class ProfileSummaryResponse(
 
 fun Profile.toSummaryResponse() = ProfileSummaryResponse(
     fullname = user.fullname ?: "",
+    imageUrl = imageUrl,
     city = city ?: "No especificada",
     experience = experience ?: 0,
     mainInstrument = instruments.firstOrNull()?.instrument?.name ?: "Ninguno",

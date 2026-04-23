@@ -10,6 +10,12 @@ class GetByIdProfileUseCase(
     private val repository: ProfileRepository
 ){
     suspend fun execute(id: UUID) : Profile = newSuspendedTransaction {
-        repository.findById(id) ?: throw NotFoundException("The ID $id not found")
+        val profile = repository.findById(id) ?: throw NotFoundException("The ID $id not found")
+
+        if (!profile.isComplete) {
+            throw NotFoundException("El perfil aún no ha sido configurado por el músico.")
+        }
+
+        profile
     }
 }

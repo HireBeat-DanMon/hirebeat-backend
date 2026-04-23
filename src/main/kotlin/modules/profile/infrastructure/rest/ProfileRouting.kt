@@ -4,11 +4,12 @@ import com.ktor.api.hirebeat.modules.profile.application.*
 import com.ktor.api.hirebeat.modules.profile.infrastructure.rest.dto.*
 import com.ktor.api.hirebeat.modules.users.infrastructure.rest.dto.toResponse
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.*
 import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
 import io.ktor.server.plugins.NotFoundException
-import io.ktor.server.request.receive
+import io.ktor.server.request.*
 import io.ktor.server.routing.*
 import io.ktor.server.response.*
 import io.ktor.server.response.respond
@@ -20,8 +21,10 @@ fun Route.profileRouting() {
     val getByUserIdUseCase by inject<GetByIdProfileUseCase>()
     val getMyProfile by inject<GetMyProfile>()
     val getAllProfileUseCase by inject <GetAllProfileUseCase>()
+    val uploadUseCase by inject<UploadProfileImageUseCase>()
 
     route("/profile") {
+
         authenticate("auth-jwt") {
             put {
                 try {
@@ -40,18 +43,28 @@ fun Route.profileRouting() {
                     val profile = updateUseCase.execute(userId, request.toDomain(userId = userId))
                     call.respond(HttpStatusCode.OK, profile.toResponse())
                 } catch (e: NotFoundException) {
-                    call.respond(HttpStatusCode.NotFound, e.message ?: "Profile not found")
+                    call.respond(HttpStatusCode.NotFound, mapOf("error" to (e.message ?: "Perfil no encontrado")))
                 } catch (e: IllegalArgumentException) {
-                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Invalid Data")
+                    call.respond(HttpStatusCode.BadRequest, mapOf("error" to (e.message ?: "Datos invalidos")))
                 } catch (e: IllegalStateException) {
-                    call.respond(HttpStatusCode.Conflict, e.message ?: "Server Error")
+                    call.respond(HttpStatusCode.Conflict, mapOf("error" to (e.message ?: "Server Error")))
                 } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error interno del servidor")
+                    call.respond(HttpStatusCode.InternalServerError, mapOf("error" to (e.message ?: "Error interno del servidor")))
                 }
             }
+
             get("/me") {
                 try {
                     val principal = call.principal<JWTPrincipal>()
+
+                    val role = principal?.payload?.getClaim("role")?.asString()
+
+                    if (role != "Musician") {
+                        return@get call.respond(
+                            HttpStatusCode.Forbidden,
+                            mapOf("error" to "Acceso denegado: Solo los músicos tienen perfil configurable.")
+                        )
+                    }
                     val claimId = principal?.payload?.getClaim("id")?.asString()
 
                     val userId = claimId?.let { UUID.fromString(it) }
@@ -60,21 +73,53 @@ fun Route.profileRouting() {
                     val profile = getMyProfile.execute(userId)
                     call.respond(HttpStatusCode.OK, profile.toResponse())
                 } catch (e: NotFoundException) {
-                    call.respond(HttpStatusCode.NotFound, e.message ?: "Profile not found")
+                    call.respond(HttpStatusCode.NotFound, mapOf("error" to (e.message ?: "Perfil no enontrado")))
                 } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error interno del servidor")
+                    call.respond(HttpStatusCode.InternalServerError, mapOf("error" to (e.message ?: "Error interno del servidor")))
                 }
             }
+
+            post("/image") {
+                try {
+                    val principal = call.principal<JWTPrincipal>()
+                    val claimId = principal?.payload?.getClaim("id")?.asString()
+                    val userId = claimId?.let { UUID.fromString(it) } ?: throw IllegalArgumentException("Token inválido")
+
+                    val multipartData = call.receiveMultipart()
+                    var fileBytes: ByteArray? = null
+                    var originalFileName = "image.jpg"
+
+                    multipartData.forEachPart { part ->
+                        when (part) {
+                            is PartData.FileItem -> {
+                                originalFileName = part.originalFileName as String
+                                fileBytes = part.streamProvider().readBytes()
+                            }
+                            else -> {}
+                        }
+                        part.dispose()
+                    }
+
+                    if (fileBytes != null) {
+                        val imageUrl = uploadUseCase.execute(userId, fileBytes!!, originalFileName)
+                        call.respond(HttpStatusCode.OK, mapOf("url" to imageUrl))
+                    } else {
+                        call.respond(HttpStatusCode.BadRequest, mapOf("error" to "No se adjuntó ninguna imagen"))
+                    }
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, mapOf("error" to (e.message ?: "Error desconocido")))                }
+            }
         }
+
         get("/{id}") {
             try {
-                val id = UUID.fromString(call.parameters["id"]) ?: throw IllegalArgumentException("Invalid UUID format")
+                val id = UUID.fromString(call.parameters["id"]) ?: throw IllegalArgumentException("Formato invalido UUID")
                 val profile = getByUserIdUseCase.execute(id)
                 call.respond(HttpStatusCode.OK, profile.toResponse())
             } catch (e: NotFoundException) {
-                call.respond(HttpStatusCode.NotFound, e.message ?: "Profile not found")
+                call.respond(HttpStatusCode.NotFound, mapOf("error" to (e.message ?: "Perfil no encontrado")))
             } catch (e: Exception) {
-                call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error interno del servidor")
+                call.respond(HttpStatusCode.InternalServerError, mapOf("error" to (e.message ?: "Error interno del servidor")))
             }
         }
 

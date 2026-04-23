@@ -10,5 +10,5 @@ interface ProfileRepository{
     suspend fun getIdByUserId(userId: UUID): UUID?
     suspend fun create (id : UUID) : Boolean
     suspend fun update (profile: Profile) : Boolean
-
+    suspend fun updateImageUrl(profileId: UUID, imageUrl: String): Boolean
 }

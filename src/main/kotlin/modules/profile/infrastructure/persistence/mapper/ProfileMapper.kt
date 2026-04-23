@@ -17,6 +17,7 @@ fun ResultRow.toProfile(
     city = this[ProfileTable.city],
     experience = this[ProfileTable.experience],
     descripcion = this[ProfileTable.descripcion],
+    imageUrl = this[ProfileTable.imageUrl],
     genres = genresList,
     instruments = instrumentsList,
     links = linksList

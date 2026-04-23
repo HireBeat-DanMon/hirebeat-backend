@@ -11,8 +11,9 @@ class GetMyProfile (
 ){
     suspend fun execute(userId: UUID) : Profile = newSuspendedTransaction {
         val profileId = repository.getIdByUserId(userId)
-            ?: throw NotFoundException("No se encontró el perfil para el usuario $userId")
+            ?: throw NotFoundException("No existe un perfil creado para este usuario")
 
-        repository.findById(profileId) ?: throw NotFoundException("The ID $id not found")
+        repository.findById(profileId)
+            ?: throw NotFoundException("El registro de perfil desapareció de la base de datos")
     }
 }

@@ -122,6 +122,12 @@ class PostgresProfileRepository : ProfileRepository {
         }
     }
 
+    override suspend fun updateImageUrl(profileId: UUID, imageUrl: String): Boolean = transaction {
+        ProfileTable.update({ ProfileTable.id eq profileId }) {
+            it[ProfileTable.imageUrl] = imageUrl
+        } > 0
+    }
+
     private fun insertInstrument(profile: Profile){
         ProfileInstrumentsTable.deleteWhere { ProfileInstrumentsTable.profileId eq profile.id }
 

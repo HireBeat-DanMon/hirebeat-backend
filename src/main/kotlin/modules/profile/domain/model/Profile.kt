@@ -10,7 +10,13 @@ data class Profile(
     val city: String?,
     val experience: Int?,
     val descripcion: String?,
+    val imageUrl: String? = null,
     val genres: List<Genre> = emptyList(),
     val instruments: List<ProfileInstrument> = emptyList(),
     val links : List<ProfileLink> = emptyList()
-)
+){
+    val isComplete: Boolean
+        get() = !city.isNullOrBlank() &&
+                !descripcion.isNullOrBlank() &&
+                instruments.isNotEmpty()
+}
