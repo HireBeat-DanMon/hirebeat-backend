@@ -5,7 +5,6 @@ import com.ktor.api.hirebeat.modules.gig_requests.domain.model.RequestStatus
 import com.ktor.api.hirebeat.modules.gig_requests.domain.repository.GigRequestRepository
 import com.ktor.api.hirebeat.modules.users.domain.model.User
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
 import java.util.UUID
@@ -20,6 +19,12 @@ class PostgresGigRequestRepository : GigRequestRepository {
             it[musicianProfileId] = request.musicianProfileId
             it[startTime] = request.startTime
             it[endTime] = request.endTime
+
+            // --- NUEVOS CAMPOS AGREGADOS ---
+            it[location] = request.location
+            it[paymentOffered] = request.paymentOffered
+            // -------------------------------
+
             it[messageDetails] = request.messageDetails
             it[status] = request.status
         }
@@ -53,6 +58,10 @@ class PostgresGigRequestRepository : GigRequestRepository {
         musicianProfileId = row[GigRequestTable.musicianProfileId],
         startTime = row[GigRequestTable.startTime],
         endTime = row[GigRequestTable.endTime],
+
+        location = row[GigRequestTable.location],
+        paymentOffered = row[GigRequestTable.paymentOffered],
+
         messageDetails = row[GigRequestTable.messageDetails],
         status = row[GigRequestTable.status],
         createdAt = row[GigRequestTable.createdAt],
