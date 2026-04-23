@@ -62,3 +62,8 @@ local.properties
 
 .env
 sh.sh
+
+
+
+
+.claude*

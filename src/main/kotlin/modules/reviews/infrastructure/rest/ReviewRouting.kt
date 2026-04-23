@@ -1,7 +1,6 @@
 package com.ktor.api.hirebeat.modules.reviews.infrastructure.rest
 
-import com.ktor.api.hirebeat.modules.reviews.application.CreateReviewUseCase
-import com.ktor.api.hirebeat.modules.reviews.application.GetProfileReviewsUseCase
+import com.ktor.api.hirebeat.modules.reviews.application.*
 import com.ktor.api.hirebeat.modules.reviews.infrastructure.rest.dto.CreateReviewRequest
 import com.ktor.api.hirebeat.modules.reviews.infrastructure.rest.dto.toResponse
 import io.ktor.http.*
@@ -16,6 +15,7 @@ import java.util.UUID
 fun Route.reviewRouting() {
     val createReviewUseCase by inject<CreateReviewUseCase>()
     val getProfileReviewsUseCase by inject<GetProfileReviewsUseCase>()
+    val getMyReviewsUseCase by inject<GetMyReviewsUseCase>()
 
     route("/reviews") {
         authenticate("auth-jwt") {
@@ -31,6 +31,18 @@ fun Route.reviewRouting() {
                     comment = request.comment
                 )
                 call.respond(HttpStatusCode.Created, mapOf("id" to review.id.toString(), "message" to "Reseña creada"))
+            }
+
+            get("/me") {
+                try {
+                    val principal = call.principal<JWTPrincipal>()
+                    val userId = UUID.fromString(principal?.payload?.getClaim("id")?.asString())
+
+                    val reviews = getMyReviewsUseCase.execute(userId)
+                    call.respond(HttpStatusCode.OK, reviews.map { it.toResponse() })
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, e.message ?: "Error al obtener tus reseñas")
+                }
             }
         }
 

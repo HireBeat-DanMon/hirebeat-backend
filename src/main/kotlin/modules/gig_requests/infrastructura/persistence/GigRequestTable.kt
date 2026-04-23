@@ -13,6 +13,8 @@ object GigRequestTable : Table("solicitudes_suplencia") {
     val musicianProfileId = uuid("musico_id") references ProfileTable.id
     val startTime = datetime("fecha_inicio")
     val endTime = datetime("fecha_fin")
+    val location = varchar("lugar", 255)
+    val paymentOffered = double("pago_ofrecido")
     val messageDetails = text("mensaje_detalles").nullable()
     val status = enumerationByName("estado", 20, RequestStatus::class).default(RequestStatus.PENDIENTE)
 

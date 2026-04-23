@@ -6,8 +6,6 @@ import io.ktor.server.plugins.NotFoundException
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import java.util.UUID
 
-// kotlin/modules/profile/application/UploadProfileImageUseCase.kt
-
 class UploadProfileImageUseCase(
     private val storageService: FileStorageService,
     private val repository: ProfileRepository
