@@ -13,7 +13,7 @@ data class ReviewResponse(
     val rating: Int,
     val comment: String,
     val createdAt: String
-)
+){}
 
 fun Review.toResponse() = ReviewResponse(
     id = id ?: UUID.randomUUID(),

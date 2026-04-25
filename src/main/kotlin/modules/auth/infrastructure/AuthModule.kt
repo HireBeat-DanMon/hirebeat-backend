@@ -1,6 +1,5 @@
 package com.ktor.api.hirebeat.modules.auth.infrastructure
 
-
 import com.ktor.api.hirebeat.modules.auth.application.*
 import com.ktor.api.hirebeat.common.infrastructure.security.PasswordHasher
 import com.ktor.api.hirebeat.modules.auth.domain.service.TokenService

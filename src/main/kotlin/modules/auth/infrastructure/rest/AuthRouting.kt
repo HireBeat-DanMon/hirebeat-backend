@@ -3,13 +3,11 @@ package com.ktor.api.hirebeat.modules.auth.infrastructure.rest
 import com.ktor.api.hirebeat.modules.auth.application.*
 import com.ktor.api.hirebeat.modules.auth.infrastructure.rest.dto.*
 import com.ktor.api.hirebeat.modules.users.infrastructure.rest.dto.*
-
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
-import java.util.UUID
 
 fun Route.authRouting() {
     val loginUseCase by inject<LoginUseCase>()

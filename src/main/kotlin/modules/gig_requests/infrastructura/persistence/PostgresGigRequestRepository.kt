@@ -19,12 +19,8 @@ class PostgresGigRequestRepository : GigRequestRepository {
             it[musicianProfileId] = request.musicianProfileId
             it[startTime] = request.startTime
             it[endTime] = request.endTime
-
-            // --- NUEVOS CAMPOS AGREGADOS ---
             it[location] = request.location
             it[paymentOffered] = request.paymentOffered
-            // -------------------------------
-
             it[messageDetails] = request.messageDetails
             it[status] = request.status
         }
@@ -35,8 +31,8 @@ class PostgresGigRequestRepository : GigRequestRepository {
         GigRequestTable.select { GigRequestTable.id eq id }.map { rowToGigRequest(it) }.singleOrNull()
     }
 
-    override suspend fun findByMusicianProfileId(profileId: UUID): List<GigRequest> = transaction {
-        GigRequestTable.select { GigRequestTable.musicianProfileId eq profileId }
+    override suspend fun findByMusicianProfileId(profileId: UUID): List<GigRequest> {
+        return GigRequestTable.select { GigRequestTable.musicianProfileId eq profileId }
             .orderBy(GigRequestTable.createdAt to SortOrder.DESC).map { rowToGigRequest(it) }
     }
 
@@ -54,14 +50,12 @@ class PostgresGigRequestRepository : GigRequestRepository {
 
     private fun rowToGigRequest(row: ResultRow) = GigRequest(
         id = row[GigRequestTable.id],
-        recruiter = User(id = row[GigRequestTable.recruiterId], email = "", password = ""),
+        recruiter = User(id = row[GigRequestTable.recruiterId], email = "vacio@hirebeat.com", password = ""),
         musicianProfileId = row[GigRequestTable.musicianProfileId],
         startTime = row[GigRequestTable.startTime],
         endTime = row[GigRequestTable.endTime],
-
         location = row[GigRequestTable.location],
         paymentOffered = row[GigRequestTable.paymentOffered],
-
         messageDetails = row[GigRequestTable.messageDetails],
         status = row[GigRequestTable.status],
         createdAt = row[GigRequestTable.createdAt],

@@ -8,7 +8,7 @@ data class Review(
     val id: UUID? = null,
     val reviewer: User? = null,
     val musicianProfileId: UUID,
-    val rating: Int, // 1 al 5
+    val rating: Int,
     val comment: String,
     val createdAt: LocalDateTime? = null
 ) {

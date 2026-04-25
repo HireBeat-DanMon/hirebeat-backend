@@ -7,4 +7,4 @@ data class CreateReviewRequest(
     val musicianProfileId: String,
     val rating: Int,
     val comment: String
-)
+){}

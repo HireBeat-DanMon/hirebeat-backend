@@ -13,7 +13,7 @@ data class BlockedSlotResponse(
     val endTime: String,
     val reason: String?,
     val isAutomatic: Boolean
-)
+){}
 
 fun BlockedSlot.toResponse() = BlockedSlotResponse(
     id = id ?: UUID.randomUUID(),
